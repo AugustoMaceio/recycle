@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Classificação de Lixo Reciclável</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0 8px;
+            background: #f7f7f7;
+        }
+        h1 {
+            font-size: 1.3em;
+            text-align: center;
+            margin-top: 18px;
+        }
+        button {
+            display: block;
+            margin: 18px auto 10px auto;
+            padding: 12px 28px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            border: none;
+            background: #2e7d32;
+            color: #fff;
+            box-shadow: 0 2px 8px #0001;
+            cursor: pointer;
+        }
+        #webcam-container {
+            display: flex;
+            justify-content: center;
+            margin: 0 auto;
+            max-width: 100vw;
+        }
+        canvas {
+            width: 90vw !important;
+            max-width: 320px;
+            height: auto !important;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #0002;
+            background: #fff;
+        }
+        #result {
+            margin-top: 18px;
+            font-size: 1.2em;
+            text-align: center;
+            min-height: 2em;
+        }
+        #bin-img {
+            display: block;
+            margin: 18px auto 0 auto;
+            max-width: 120px;
+            width: 40vw;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0002;
+            background: #fff;
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 1em; }
+            button { font-size: 1em; padding: 10px 16px; }
+            #bin-img { max-width: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Classificador de Lixo Reciclável</h1>
+    <button type="button" onclick="init()">Iniciar</button>
+    <div id="webcam-container"></div>
+    <div id="result"></div>
+    <img id="bin-img" src="" alt="" style="display:none;">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "./model/";
+
+        let model, webcam, maxPredictions;
+
+        // Mapeamento dos rótulos para imagens das lixeiras
+        const binImages = {
+            "metal": "./img/metal.png",
+            "papel": "./img/papel.png",
+            "plastico": "./img/plastico.png",
+            "vidro": "./img/vidro.png",
+            "lixo": "./img/lixo.png"
+        };
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const flip = true;
+            webcam = new tmImage.Webcam(200, 200, flip);
+            await webcam.setup({ facingMode: "environment" }); // Prioriza câmera traseira em mobile
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+
+            // Encontrar a predição com maior probabilidade
+            let maxProb = 0;
+            let maxLabel = "";
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > maxProb) {
+                    maxProb = prediction[i].probability;
+                    maxLabel = prediction[i].className;
+                }
+            }
+
+            const resultDiv = document.getElementById("result");
+            const binImg = document.getElementById("bin-img");
+
+            if (maxProb > 0.6 && binImages[maxLabel]) {
+                resultDiv.innerHTML = `Jogue na lixeira: <b>${maxLabel}</b>`;
+                binImg.src = binImages[maxLabel];
+                binImg.alt = `Lixeira de ${maxLabel}`;
+                binImg.style.display = "block";
+                await new Promise(resolve => setTimeout(resolve, 600)); // Espera 0.6 segundo
+            } else {
+                resultDiv.innerHTML = "Não reconhecido ou confiança baixa.";
+                binImg.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
