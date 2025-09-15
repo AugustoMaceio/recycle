@@ -103,7 +103,7 @@
             background-color: red;
         }
 
-        .papel {
+        .papel, .papelao {
             background-color: blue;
         }
 
@@ -134,7 +134,7 @@
     <div id="webcam-container"></div>
     <div id="result"></div>
     <img id="bin-img" src="" alt="" style="display:none;">
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
@@ -149,11 +149,11 @@
             "papel": "./img/papel.png",
             "plastico": "./img/plastico.png",
             "vidro": "./img/vidro.png",
-            "lixo": "./img/lixo.png"
+            "lixo": "./img/lixo.png", "papelao": "./img/papel.png"
         };
 
         // Lista das classes para manipulação do CSS
-        const binClasses = ["metal", "papel", "plastico", "vidro", "lixo"];
+        const binClasses = ["metal", "papel","papelao", "plastico", "vidro", "lixo"];
 
         async function init() {
             const modelURL = URL + "model.json";
