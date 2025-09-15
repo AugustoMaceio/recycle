@@ -15,13 +15,19 @@ Este projeto é um exercício prático da disciplina **Deep Learning (2025.2)** 
 - `img/`: Pasta com imagens das lixeiras para cada tipo de lixo.
 - `model/`: Pasta com o modelo treinado exportado do Teachable Machine.
 
-## Como rodar localmente
+## Como rodar
 
+Você pode rodar o projeto localmente ou acessar a versão web:
+
+**1. Localmente**
 1. Clone este repositório.
 2. Instale a extensão **Live Server** no VS Code.
 3. Abra o projeto no VS Code e inicie o Live Server.
 4. Acesse pelo navegador em `http://localhost:5500/index.html` ou, para acessar via celular na mesma rede, use o IP local do seu computador (ex: `http://192.168.1.100:5500/index.html`).
 
+**2. Na web**
+Acesse o projeto diretamente pelo navegador no link: [https://augustomaceio.github.io/recycle/](https://augustomaceio.github.io/recycle/)
+
 ## Créditos
- - Augusto César M. de Oliveira
+- Augusto César M. de Oliveira
 - Exercício da disciplina Deep Learning (2025.2) - Pós-graduação em Ciência da Computação
