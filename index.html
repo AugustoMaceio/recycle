@@ -1,21 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Augusto Cesar M de Oliveira">
+    <meta name="description"
+        content="Exercício prático de classificação de lixo reciclável usando Teachable Machine e TensorFlow.js, desenvolvido para a disciplina Deep Learning (2025.2) da Pós-graduação em Ciência da Computação (UFPE-Cin).">
     <title>Classificação de Lixo Reciclável</title>
     <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0 8px;
             background: #f7f7f7;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
+
         h1 {
             font-size: 1.3em;
             text-align: center;
             margin-top: 18px;
         }
+
         button {
             display: block;
             margin: 18px auto 10px auto;
@@ -28,51 +43,101 @@
             box-shadow: 0 2px 8px #0001;
             cursor: pointer;
         }
+
         #webcam-container {
             display: flex;
             justify-content: center;
-            margin: 0 auto;
+
             max-width: 100vw;
+            align-items: center;
+            width: 100vw;
+            height: 40vh;
         }
+
         canvas {
-            width: 90vw !important;
-            max-width: 320px;
-            height: auto !important;
+            width: 100vw !important;
+            height: 100% !important;
+            max-width: 100vw;
+            max-height: 40vh;
+            object-fit: contain;
             border-radius: 10px;
             box-shadow: 0 2px 8px #0002;
             background: #fff;
         }
+
         #result {
             margin-top: 18px;
             font-size: 1.2em;
             text-align: center;
             min-height: 2em;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 0;
+            transition: background 0.3s;
         }
+
         #bin-img {
             display: block;
-            margin: 18px auto 0 auto;
-            max-width: 120px;
-            width: 40vw;
-            height: auto;
+            margin: 0 auto;
+            width: 100vw !important;
+            height: 100% !important;
+            max-width: 100vw;
+            max-height: 40vh;
+            object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 2px 8px #0002;
             background: #fff;
         }
+
+        /* Classes para cada tipo de lixo */
+        .vidro {
+            background-color: green;
+        }
+
+        .metal {
+            background-color: yellow;
+            color: #222;
+        }
+
+        .plastico {
+            background-color: red;
+        }
+
+        .papel {
+            background-color: blue;
+        }
+
+        .lixo {
+            background-color: gray;
+        }
+
         @media (max-width: 400px) {
-            h1 { font-size: 1em; }
-            button { font-size: 1em; padding: 10px 16px; }
-            #bin-img { max-width: 80px; }
+            h1 {
+                font-size: 1em;
+            }
+
+            button {
+                font-size: 1em;
+                padding: 10px 16px;
+            }
+
+            #bin-img {
+                max-width: 200px;
+            }
         }
     </style>
 </head>
+
 <body>
     <h1>Classificador de Lixo Reciclável</h1>
     <button type="button" onclick="init()">Iniciar</button>
     <div id="webcam-container"></div>
     <div id="result"></div>
     <img id="bin-img" src="" alt="" style="display:none;">
+    
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
         const URL = "./model/";
 
@@ -86,6 +151,9 @@
             "vidro": "./img/vidro.png",
             "lixo": "./img/lixo.png"
         };
+
+        // Lista das classes para manipulação do CSS
+        const binClasses = ["metal", "papel", "plastico", "vidro", "lixo"];
 
         async function init() {
             const modelURL = URL + "model.json";
@@ -125,8 +193,12 @@
             const resultDiv = document.getElementById("result");
             const binImg = document.getElementById("bin-img");
 
+            // Remove todas as classes de lixo antes de adicionar a nova
+            binClasses.forEach(cls => resultDiv.classList.remove(cls));
+
             if (maxProb > 0.6 && binImages[maxLabel]) {
                 resultDiv.innerHTML = `Jogue na lixeira: <b>${maxLabel}</b>`;
+                resultDiv.classList.add(maxLabel);
                 binImg.src = binImages[maxLabel];
                 binImg.alt = `Lixeira de ${maxLabel}`;
                 binImg.style.display = "block";
@@ -138,4 +210,5 @@
         }
     </script>
 </body>
+
 </html>
